@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PostList from './components/PostList.jsx';
 import PostForm from './components/PostForm.jsx';
 
-// IMPORTANT FIX: Use the relative path /api/posts. 
-// Vite proxy automatically forwards this to http://localhost:8001/api/posts.
-const API_BASE_PATH = '/api/posts'; 
+const API_URL = "https://facebook-api-csf2.onrender.com";
 
 export default function App() {
   const [posts, setPosts] = useState([]);
@@ -16,13 +14,10 @@ export default function App() {
     setLoading(true);
     setError('');
     try {
-      // FIX 1: Use the proxied path
-      const res = await fetch(API_BASE_PATH); 
+      const res = await fetch(`${API_URL}/api/posts`);
       if (!res.ok) throw new Error('Failed to fetch posts');
       const data = await res.json();
-      // NOTE: Spring Data JPA usually returns posts sorted by ID. 
-      // If you want newest first, this sort logic is correct:
-      data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); 
+      data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // newest first
       setPosts(data);
     } catch (e) {
       setError(e.message || 'Error fetching posts');
@@ -36,8 +31,7 @@ export default function App() {
   }, []);
 
   const handleCreate = async (post) => {
-    // FIX 2: Use the proxied path
-    const res = await fetch(API_BASE_PATH, {
+    const res = await fetch(`${API_URL}/api/posts`, {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(post)
@@ -46,14 +40,12 @@ export default function App() {
       const txt = await res.text();
       throw new Error(txt || 'Create failed');
     }
-    // Optimization: Add the new post to the list directly instead of re-fetching everything
     const saved = await res.json();
     setPosts(prev => [saved, ...prev]);
   };
 
   const handleUpdate = async (id, updates) => {
-    // FIX 3: Use the proxied path
-    const res = await fetch(`${API_BASE_PATH}/${id}`, {
+    const res = await fetch(`${API_URL}/api/posts/${id}`, {
       method: 'PUT',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(updates)
@@ -66,8 +58,7 @@ export default function App() {
 
   const handleDelete = async (id) => {
     if (!confirm('Delete this post?')) return;
-    // FIX 4: Use the proxied path
-    const res = await fetch(`${API_BASE_PATH}/${id}`, {
+    const res = await fetch(`${API_URL}/api/posts/${id}`, {
       method: 'DELETE'
     });
     if (!res.ok) {
