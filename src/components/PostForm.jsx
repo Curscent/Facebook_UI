@@ -10,25 +10,13 @@ export default function PostForm({ initial = {}, onSubmit, onCancel, submitLabel
   const handle = async (e) => {
     e.preventDefault();
     setError('');
-    
-    // Validation: Author is required
     if (!author.trim()) {
       setError('Author is required');
       return;
     }
-    // FIX: Content is required
-    if (!content.trim()) {
-        setError('Content is required');
-        return;
-    }
-    
     setBusy(true);
     try {
-      await onSubmit({ 
-          author: author.trim(), 
-          content: content.trim(), 
-          imageUrl: imageUrl?.trim() || null 
-      });
+      await onSubmit({ author: author.trim(), content, imageUrl: imageUrl?.trim() || null });
       if (!initial.id) {
         setAuthor('');
         setContent('');

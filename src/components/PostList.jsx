@@ -27,8 +27,8 @@ export default function PostList({ posts = [], onEdit, onDelete }) {
           <div className="post-content">{post.content}</div>
 
           {post.imageUrl && (
-            // Image URL is correctly handled here
-            <img src={post.imageUrl} className="post-image" alt="User content" /> 
+            // eslint-disable-next-line jsx-a11y/alt-text
+            <img src={post.imageUrl} className="post-image" />
           )}
 
           <div className="controls">
